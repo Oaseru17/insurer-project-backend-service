@@ -12,9 +12,12 @@ function createInMemoryCarrierRepository(
   definitions: readonly CarrierDefinition[] = carrierDefinitions,
 ): CarrierRepository {
   const providers = new Map(
-    definitions.map(({ id, name, form, createAdapter }) => {
+    definitions.map(({ id, name, form, createAdapter, createRules }) => {
       const parsed = parseForm(form).form;
-      return [id, { id, name, form: parsed, adapter: createAdapter(parsed) }];
+      return [
+        id,
+        { id, name, form: parsed, adapter: createAdapter(parsed), rules: createRules(parsed) },
+      ];
     }),
   );
   return {

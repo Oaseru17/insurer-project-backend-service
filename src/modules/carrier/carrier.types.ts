@@ -1,6 +1,7 @@
 import type { CustomerDocument } from '../customer';
 import type { FormDefinition } from '../../shared/form-schema';
 import type { Answers } from '../../shared/schemas';
+import type { EligibilityRule } from './domain/eligibility';
 import type { FieldResolution } from './schemas';
 
 interface CarrierSection {
@@ -22,14 +23,16 @@ interface CarrierDefinition {
   name: string;
   form: unknown;
   createAdapter: (form: FormDefinition) => CarrierAdapter;
+  createRules: (form: FormDefinition) => EligibilityRule[];
 }
 
-// A validated carrier the platform can quote with. Eligibility rules join in OLLI-BE-008.
+// A validated carrier the platform can quote with.
 interface CarrierProvider {
   id: string;
   name: string;
   form: FormDefinition;
   adapter: CarrierAdapter;
+  rules: EligibilityRule[];
 }
 
 export type { CarrierSection, CarrierAdapter, CarrierDefinition, CarrierProvider };

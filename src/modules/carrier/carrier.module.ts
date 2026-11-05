@@ -1,4 +1,5 @@
 import type { Router } from 'express';
+import type { CustomerService } from '../customer';
 import { createCarrierController } from './carrier.controller';
 import { type CarrierRepository, createInMemoryCarrierRepository } from './carrier.repository';
 import { createCarrierRouter } from './carrier.routes';
@@ -10,13 +11,15 @@ interface CarrierModule {
 }
 
 interface CarrierModuleDeps {
+  customers: CustomerService;
   repository?: CarrierRepository;
 }
 
 function createCarrierModule({
+  customers,
   repository = createInMemoryCarrierRepository(),
-}: CarrierModuleDeps = {}): CarrierModule {
-  const service = createCarrierService(repository);
+}: CarrierModuleDeps): CarrierModule {
+  const service = createCarrierService(repository, customers);
   return { service, router: createCarrierRouter(createCarrierController(service)) };
 }
 
