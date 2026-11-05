@@ -1,13 +1,14 @@
-# Olli — connecting a customer profile to a carrier's quote form
+# Olli backend service
 
 Our platform holds one **standard customer profile**. Every insurance carrier sends its quote form as
-**JSON** with its own field names, formats, options and rules. This project connects the two for a
-fictional carrier, **Harbor Assurance** (renters insurance):
+**JSON** with its own field names, formats, options and rules. This service connects the two; the first
+carrier is a fictional one, **Harbor Assurance** (renters insurance). It provides:
 
-- an **adapter** that turns a customer profile into Harbor's quote request in Harbor's exact format;
-- a **Next.js** journey that renders Harbor's form from its JSON, pre-fills what the profile already
-  answers and only asks for what's missing;
-- an **eligibility check** that shows clearly why Harbor can't quote someone instead of submitting.
+- an **adapter** per carrier that turns a customer profile into the carrier's quote request, in the
+  carrier's exact format;
+- the form JSON and pre-filled answers for a **Next.js** journey that renders the carrier's form, pre-fills
+  what the profile already answers and only asks for what's missing;
+- an **eligibility check** that shows clearly why a carrier can't quote someone instead of submitting.
 
 Two repositories:
 
@@ -35,9 +36,9 @@ npm install && npm run dev
 Open **http://localhost:3000** and choose **Renters insurance**.
 
 - You start logged in as **Maya Torres** (sample profile A) → eligible → five short steps → **Quote request
-  made**, with a _dev only_ box showing the exact JSON Harbor would receive.
-- Use the menu at the top right → **Log in as Sam Lee** (sample profile B) → Harbor can't quote him, and the
-  page says why: _under 21_ and _Harbor doesn't quote in Nevada_.
+  made**, with a _dev only_ box showing the exact JSON the carrier would receive.
+- Use the menu at the top right → **Log in as Sam Lee** (sample profile B) → the carrier can't quote him, and
+  the page says why: _under 21_ and _no quotes in Nevada_.
 
 Tests and checks:
 
@@ -50,27 +51,35 @@ API description: **http://localhost:4000/openapi.json** (OpenAPI 3.1).
 
 ---
 
-## How the profile maps to Harbor's form
+## How the profile maps to a carrier's form
 
-Each Harbor field is resolved to one of four sources, with a reason. The web shows _profile_ and
+Each carrier field is resolved to one of four sources, with a reason. The web shows _profile_ and
 _converted_ answers read-only (with **Change**) and asks for the rest.
 
-| Harbor field              | From the profile           | Source              | Why                                                                                                                                                                        |
-| ------------------------- | -------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `applicant_full_name`     | `first_name` + `last_name` | converted           | Joined; editable because a legal name may differ                                                                                                                           |
-| `date_of_birth`           | `date_of_birth`            | converted           | `1994-03-12` → Harbor's `MM/DD/YYYY` (`03/12/1994`)                                                                                                                        |
-| `contact_email`           | `email`                    | profile             | Same meaning, copied                                                                                                                                                       |
-| `phone`                   | —                          | ask                 | Not in the profile; sent as typed (Harbor states no format)                                                                                                                |
-| `residence_state`         | `state`                    | converted           | `OR` → `Oregon` (Harbor wants the option label)                                                                                                                            |
-| `postal_code`             | `zip`                      | profile             | Copied                                                                                                                                                                     |
-| `contents_coverage`       | `personal_property_value`  | **ask** ⚠           | **Look-alike.** What your belongings are worth isn't the cover you buy, and `32000` isn't one of Harbor's amounts. The customer picks; the hint shows the property value   |
-| `pets`                    | `has_dog`                  | **suggested** ⚠     | **Look-alike.** `has_dog: true` proves a dog, not _only_ a dog — Dog is pre-ticked for the customer to confirm. `has_dog: false` never becomes "None" (there may be a cat) |
-| `dog_breed`               | `dog_breed`                | profile / converted | Matched to Harbor's options ignoring case; anything else → `Other`. Only asked when Dog is selected (`showIf`)                                                             |
-| `claims_last_5_years`     | `claims_last_3_years`      | **ask** ⚠           | **Look-alike.** A 3-year count can't answer a 5-year question; the 3-year count is shown as a hint                                                                         |
-| `building_has_sprinklers` | —                          | ask                 | Optional; left out of the request if unanswered                                                                                                                            |
+| Carrier field             | From the profile           | Source              | Why                                                                                                                                                                           |
+| ------------------------- | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `applicant_full_name`     | `first_name` + `last_name` | converted           | Joined; editable because a legal name may differ                                                                                                                              |
+| `date_of_birth`           | `date_of_birth`            | converted           | `1994-03-12` → the carrier's `MM/DD/YYYY` (`03/12/1994`)                                                                                                                      |
+| `contact_email`           | `email`                    | profile             | Same meaning, copied                                                                                                                                                          |
+| `phone`                   | —                          | ask                 | Not in the profile; sent as typed (the form states no format)                                                                                                                 |
+| `residence_state`         | `state`                    | converted           | `OR` → `Oregon` (the carrier wants the option label)                                                                                                                          |
+| `postal_code`             | `zip`                      | profile             | Copied                                                                                                                                                                        |
+| `contents_coverage`       | `personal_property_value`  | **ask** ⚠           | **Look-alike.** What your belongings are worth isn't the cover you buy, and `32000` isn't one of the carrier's amounts. The customer picks; the hint shows the property value |
+| `pets`                    | `has_dog`                  | **suggested** ⚠     | **Look-alike.** `has_dog: true` proves a dog, not _only_ a dog — Dog is pre-ticked for the customer to confirm. `has_dog: false` never becomes "None" (there may be a cat)    |
+| `dog_breed`               | `dog_breed`                | profile / converted | Matched to the carrier's options ignoring case; anything else → `Other`. Only asked when Dog is selected (`showIf`)                                                           |
+| `claims_last_5_years`     | `claims_last_3_years`      | **ask** ⚠           | **Look-alike.** A 3-year count can't answer a 5-year question; the 3-year count is shown as a hint                                                                            |
+| `building_has_sprinklers` | —                          | ask                 | Optional; left out of the request if unanswered                                                                                                                               |
 
-The request sent to Harbor contains **only Harbor's keys**, only **visible** fields (`dog_breed` is
-dropped if Dog isn't selected), and **no blank optional answers**. For Maya with her answers:
+**Required or optional, and conditional fields** come from each field in the carrier's JSON, not from code:
+
+- `required: true` fields must be answered — each step checks them, and submit returns `400` naming the
+  field. Optional fields (`building_has_sprinklers`) are marked _(optional)_ and can be left blank.
+- `showIf` fields only appear when their condition holds: `dog_breed` is shown and required **only when
+  pets includes Dog**. Untick Dog and it disappears and isn't required.
+
+The request sent to the carrier contains **only the carrier's keys**, only **visible** fields (`dog_breed`
+is dropped if Dog isn't selected), and **no blank optional answers**. The expected Harbor request for Maya
+with her answers:
 
 ```json
 {
@@ -89,8 +98,8 @@ dropped if Dog isn't selected), and **no blank optional answers**. For Maya with
 
 ## Eligibility
 
-- **Rules come from Harbor's own JSON**, not from code: the minimum age (`validation.minAge: 21`) and the
-  states Harbor lists. Nothing is invented (no breed or claims limits — Harbor's JSON doesn't state any).
+- **Rules come from the carrier's own JSON**, not from code: the minimum age (`validation.minAge: 21`) and
+  the states the carrier lists. Nothing is invented (no breed or claims limits — the JSON doesn't state any).
 - **Every rule runs**, so the customer sees all reasons at once. A rule can pass, fail, or be _unknown_
   (it needs an answer the customer hasn't given yet) — ready for carriers whose rules depend on asked fields.
 - **When it runs:** before any questions (Sam is stopped immediately — no wasted form) and again on submit
@@ -214,14 +223,14 @@ each one is a future microservice:
   TypeScript types from it, so the two can't drift.
 - **Versioned API:** everything is under `/api/v1`.
 
-| Method | Path                                           | Returns                                                                           |
-| ------ | ---------------------------------------------- | --------------------------------------------------------------------------------- |
-| GET    | `/api/v1/customers/:id`                        | Customer profile                                                                  |
-| GET    | `/api/v1/carriers`                             | Carriers and the product each quotes                                              |
-| GET    | `/api/v1/carriers/:id/form`                    | The carrier's form definition (the web renders it)                                |
-| GET    | `/api/v1/forms/:carrierId/prefill?customerId=` | Each field pre-filled or asked, with reasons, plus the carrier's pages            |
-| POST   | `/api/v1/carriers/:id/eligibility`             | `eligible` / `ineligible` (all reasons) / `unknown`                               |
-| POST   | `/api/v1/carriers/:id/quotes`                  | Harbor's exact request (`201`), or `400` with field issues, or `422` with reasons |
+| Method | Path                                           | Returns                                                                                |
+| ------ | ---------------------------------------------- | -------------------------------------------------------------------------------------- |
+| GET    | `/api/v1/customers/:id`                        | Customer profile                                                                       |
+| GET    | `/api/v1/carriers`                             | Carriers and the product each quotes                                                   |
+| GET    | `/api/v1/carriers/:id/form`                    | The carrier's form definition (the web renders it)                                     |
+| GET    | `/api/v1/forms/:carrierId/prefill?customerId=` | Each field pre-filled or asked, with reasons, plus the carrier's pages                 |
+| POST   | `/api/v1/carriers/:id/eligibility`             | `eligible` / `ineligible` (all reasons) / `unknown`                                    |
+| POST   | `/api/v1/carriers/:id/quotes`                  | The carrier's exact request (`201`), or `400` with field issues, or `422` with reasons |
 
 ### Why is there a backend at all?
 
@@ -237,9 +246,10 @@ The web stays a pure client, so the cost is one extra `npm run dev`.
 
 - **Test-first:** each feature landed as a _failing test_ commit followed by the _implementation_ commit
   (visible in the history).
-- **Golden fixtures** (`golden/`) — the expected Harbor request for Maya, her field resolutions and pages,
-  and Sam's eligibility at two dates — were **written by hand from the brief before any code**, so the
-  tests check the code against the brief, not against itself.
+- **Golden fixtures** (`golden/`) hold the **expected responses, written by hand from the brief before any
+  code** (TDD): the expected Harbor request for Maya, her field resolutions and pages, and Sam's eligibility
+  at two dates. Tests check the code against them, so the code is measured against the brief, not against
+  itself.
 - **Lean by design:** tests cover behaviour that matters (mapping, eligibility reasons, quote building,
   route errors, PII-free logs) rather than everything.
 - Backend: Jest + Supertest (42 tests). Web: Jest + React Testing Library (16 tests).
@@ -248,17 +258,17 @@ The web stays a pure client, so the cost is one extra `npm run dev`.
 
 | #   | Assumption                                                                                                                           |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| A1  | Property value isn't coverage — the customer picks one of Harbor's amounts; the profile value is a hint                              |
+| A1  | Property value isn't coverage — the customer picks one of the carrier's amounts; the profile value is a hint                         |
 | A2  | `has_dog: true` → Dog pre-ticked to confirm; `has_dog: false` is asked, never treated as "None". "None" can't be combined with a pet |
-| A3  | 5-year claims are asked; the 3-year count is a hint, not a minimum (Harbor's only rule is `min: 0`)                                  |
-| A4  | The four states in Harbor's form are the states it serves — any other state is ineligible                                            |
+| A3  | 5-year claims are asked; the 3-year count is a hint, not a minimum (the form's only rule is `min: 0`)                                |
+| A4  | The states in the carrier's form are the states it serves — any other state is ineligible                                            |
 | A5  | Age is measured on the customer's own date                                                                                           |
 | A6  | Full legal name = first + last name, editable                                                                                        |
-| A7  | Breed matched ignoring case; anything not in Harbor's list → `Other`                                                                 |
+| A7  | Breed matched ignoring case; anything not in the carrier's list → `Other`                                                            |
 | A8  | Unanswered optional fields are left out of the request                                                                               |
 | A9  | Eligibility before the questions and again on submit; all reasons shown                                                              |
-| A10 | Only rules stated in Harbor's JSON are enforced                                                                                      |
-| A11 | "Submit" builds Harbor's request; it isn't sent (`sent: false`) — there is no Harbor API                                             |
+| A10 | Only rules stated in the carrier's JSON are enforced                                                                                 |
+| A11 | "Submit" builds the carrier's request; it isn't sent (`sent: false`) — there is no carrier API                                       |
 
 ## How this works with 50 carriers
 
@@ -272,7 +282,7 @@ The structure is already the 50-carrier one — Harbor is simply the first entry
    web renderer don't change.
 3. **Safety per carrier:** forms are validated when loaded (unknown field types or rules are refused, not
    ignored); a contract test checks every mapping covers exactly the carrier's fields; each carrier gets
-   golden fixtures like Harbor's. Forms are versioned so a carrier's change is a reviewed update.
+   golden fixtures. Forms are versioned so a carrier's change is a reviewed update.
 4. **The questionnaire grows up:** with many carriers, `FormModule` merges their questions so the customer
    **answers each thing once** (one phone number for every carrier), filters out carriers that can't quote
    before asking anything, and writes new answers back to the profile. Some profile fields should become
@@ -296,7 +306,7 @@ only adds its own extra questions.
 | 4   | **Authentication**                | None (the brief excludes it); a demo "log in as" menu picks a sample customer | OAuth2/JWT, customers can only read their own profile and quotes, service-to-service auth             |
 | 5   | **Duplicate ids**                 | The in-memory store overwrites                                                | Unique index on `_id`; `409 Conflict` on create                                                       |
 | 6   | **Full validation on every step** | Each step checks required answers; formats and options are checked on submit  | A validate endpoint per step, so every error shows on the step where it was answered                  |
-| 7   | **Actually send the quote**       | Harbor's request is built and returned with `sent: false`                     | A client per carrier API, mapping the carrier's response (price, decline reasons) back into our model |
+| 7   | **Actually send the quote**       | The carrier's request is built and returned with `sent: false`                | A client per carrier API, mapping the carrier's response (price, decline reasons) back into our model |
 | 8   | **Persistence**                   | In-memory repositories, seeded at startup                                     | MongoDB behind the existing repository interfaces                                                     |
 | 9   | **End-to-end tests**              | Journeys checked in a real browser by hand                                    | Playwright smoke tests for both sample customers in CI                                                |
 | 10  | **Hosting**                       | Run locally                                                                   | Deploy both apps with preview environments per PR                                                     |
