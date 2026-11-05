@@ -7,19 +7,19 @@ code existed**. Tests import these files; they are never regenerated from the im
 
 ## Maya (profile A) — field by field
 
-| Harbor field              | Expected           | Source    | Why                                                                                                                                   |
-| ------------------------- | ------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `applicant_full_name`     | `Maya Torres`      | converted | `first_name` + `last_name`; editable because the profile name may not be the legal name (A6)                                          |
-| `date_of_birth`           | `03/12/1994`       | converted | `1994-03-12` → Harbor's `MM/DD/YYYY`                                                                                                  |
-| `contact_email`           | `maya@example.com` | profile   | Same meaning, copied                                                                                                                  |
-| `phone`                   | —                  | ask       | Not in the profile                                                                                                                    |
-| `residence_state`         | `Oregon`           | converted | `OR` → Harbor's option label                                                                                                          |
-| `postal_code`             | `97205`            | profile   | 5 digits already match Harbor's pattern                                                                                               |
-| `contents_coverage`       | `50000`            | suggested | Look-alike: belongings are worth $32,000, which isn't an option; smallest tier ≥ value, pre-selected for the customer to confirm (A1) |
-| `pets`                    | `["Dog"]`          | suggested | Look-alike: `has_dog: true` proves Dog is in the set, not that it's the only pet; customer confirms (A2)                              |
-| `dog_breed`               | `Labrador`         | profile   | Exact option match; shown because pets includes Dog (A7)                                                                              |
-| `claims_last_5_years`     | —                  | ask       | Look-alike: a 3-year count can't answer a 5-year question; hint shows the 3-year count (A3)                                           |
-| `building_has_sprinklers` | —                  | ask       | Not in the profile; optional                                                                                                          |
+| Harbor field              | Expected           | Source    | Why                                                                                                                                                                                       |
+| ------------------------- | ------------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `applicant_full_name`     | `Maya Torres`      | converted | `first_name` + `last_name`; editable because the profile name may not be the legal name (A6)                                                                                              |
+| `date_of_birth`           | `03/12/1994`       | converted | `1994-03-12` → Harbor's `MM/DD/YYYY`                                                                                                                                                      |
+| `contact_email`           | `maya@example.com` | profile   | Same meaning, copied                                                                                                                                                                      |
+| `phone`                   | —                  | ask       | Not in the profile                                                                                                                                                                        |
+| `residence_state`         | `Oregon`           | converted | `OR` → Harbor's option label                                                                                                                                                              |
+| `postal_code`             | `97205`            | profile   | 5 digits already match Harbor's pattern                                                                                                                                                   |
+| `contents_coverage`       | —                  | ask       | Look-alike: belongings are worth $32,000, which isn't coverage and isn't one of Harbor's amounts. The customer picks; the hint shows the property value (A1, changed by owner 2026-11-05) |
+| `pets`                    | `["Dog"]`          | suggested | Look-alike: `has_dog: true` proves Dog is in the set, not that it's the only pet; customer confirms (A2)                                                                                  |
+| `dog_breed`               | `Labrador`         | profile   | Exact option match; shown because pets includes Dog (A7)                                                                                                                                  |
+| `claims_last_5_years`     | —                  | ask       | Look-alike: a 3-year count can't answer a 5-year question; hint shows the 3-year count (A3)                                                                                               |
+| `building_has_sprinklers` | —                  | ask       | Not in the profile; optional                                                                                                                                                              |
 
 Sections (O6): About you · Your home · Coverage · Pets · Claims history — date of birth on page 1.
 
