@@ -3,17 +3,57 @@
   "carrierId": "harbor",
   "asOf": "2026-11-05",
   "resolutions": [
-    { "key": "applicant_full_name", "source": "converted", "value": "Maya Torres" },
-    { "key": "date_of_birth", "source": "converted", "value": "03/12/1994" },
-    { "key": "contact_email", "source": "profile", "value": "maya@example.com" },
-    { "key": "phone", "source": "ask" },
-    { "key": "residence_state", "source": "converted", "value": "Oregon" },
-    { "key": "postal_code", "source": "profile", "value": "97205" },
-    { "key": "contents_coverage", "source": "suggested", "value": 50000 },
-    { "key": "pets", "source": "suggested", "value": ["Dog"] },
-    { "key": "dog_breed", "source": "profile", "value": "Labrador" },
-    { "key": "claims_last_5_years", "source": "ask" },
-    { "key": "building_has_sprinklers", "source": "ask" }
+    {
+      "key": "applicant_full_name",
+      "source": "converted",
+      "value": "Maya Torres"
+    },
+    {
+      "key": "date_of_birth",
+      "source": "converted",
+      "value": "03/12/1994"
+    },
+    {
+      "key": "contact_email",
+      "source": "profile",
+      "value": "maya@example.com"
+    },
+    {
+      "key": "phone",
+      "source": "ask"
+    },
+    {
+      "key": "residence_state",
+      "source": "converted",
+      "value": "Oregon"
+    },
+    {
+      "key": "postal_code",
+      "source": "profile",
+      "value": "97205"
+    },
+    {
+      "key": "contents_coverage",
+      "source": "ask"
+    },
+    {
+      "key": "pets",
+      "source": "suggested",
+      "value": ["Dog"]
+    },
+    {
+      "key": "dog_breed",
+      "source": "profile",
+      "value": "Labrador"
+    },
+    {
+      "key": "claims_last_5_years",
+      "source": "ask"
+    },
+    {
+      "key": "building_has_sprinklers",
+      "source": "ask"
+    }
   ],
   "sections": [
     {
@@ -26,8 +66,20 @@
       "title": "Your home",
       "fields": ["residence_state", "postal_code", "building_has_sprinklers"]
     },
-    { "id": "coverage", "title": "Coverage", "fields": ["contents_coverage"] },
-    { "id": "pets", "title": "Pets", "fields": ["pets", "dog_breed"] },
-    { "id": "claims_history", "title": "Claims history", "fields": ["claims_last_5_years"] }
+    {
+      "id": "coverage",
+      "title": "Coverage",
+      "fields": ["contents_coverage"]
+    },
+    {
+      "id": "pets",
+      "title": "Pets",
+      "fields": ["pets", "dog_breed"]
+    },
+    {
+      "id": "claims_history",
+      "title": "Claims history",
+      "fields": ["claims_last_5_years"]
+    }
   ]
 }
