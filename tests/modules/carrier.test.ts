@@ -42,7 +42,16 @@ describe('CarrierModule', () => {
     };
 
     expect(() =>
-      createInMemoryCarrierRepository([{ id: 'broken', name: 'Broken', form: broken }]),
+      createInMemoryCarrierRepository([
+        {
+          id: 'broken',
+          name: 'Broken',
+          form: broken,
+          createAdapter: () => {
+            throw new Error('not reached: the form is rejected first');
+          },
+        },
+      ]),
     ).toThrow(FormDefinitionError);
   });
 });

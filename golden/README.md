@@ -25,7 +25,7 @@ Sections (O6): About you · Your home · Coverage · Pets · Claims history — 
 
 ## Maya — quote requests
 
-1. Accepts the suggestions, phone `503-555-0142` (sent as typed — Harbor states no format), 0 claims,
+1. Picks 50,000 coverage, confirms Dog, phone `503-555-0142` (sent as typed — Harbor states no format), 0 claims,
    sprinklers left blank → **sprinklers omitted** (A8).
 2. Changes pets to `Cat` → `dog_breed` is hidden by `showIf`, so it is **dropped** even though a value
    is still held (I1); sprinklers answered `true` → included.
