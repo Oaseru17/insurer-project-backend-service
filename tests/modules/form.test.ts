@@ -14,7 +14,7 @@ function formApp() {
   const carriers = createCarrierModule({ customers: customers.service });
   const app = express();
   app.use(
-    '/api/forms',
+    '/api/v1/forms',
     createFormModule({ customers: customers.service, carriers: carriers.service }).router,
   );
   app.use(errorHandler(createLogger(() => undefined)));
@@ -23,7 +23,7 @@ function formApp() {
 
 describe('FormModule', () => {
   it("returns Maya's pre-filled and asked Harbor fields, page by page", async () => {
-    const res = await request(formApp()).get('/api/forms/harbor/prefill?customerId=a');
+    const res = await request(formApp()).get('/api/v1/forms/harbor/prefill?customerId=a');
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ carrierId: 'harbor', customerId: 'a' });
@@ -36,13 +36,13 @@ describe('FormModule', () => {
   });
 
   it('returns 404 for an unknown customer', async () => {
-    const res = await request(formApp()).get('/api/forms/harbor/prefill?customerId=zz');
+    const res = await request(formApp()).get('/api/v1/forms/harbor/prefill?customerId=zz');
 
     expect(res.status).toBe(404);
   });
 
   it('requires a customerId', async () => {
-    const res = await request(formApp()).get('/api/forms/harbor/prefill');
+    const res = await request(formApp()).get('/api/v1/forms/harbor/prefill');
 
     expect(res.status).toBe(400);
     expect(res.body.error.issues).toEqual([expect.objectContaining({ path: 'customerId' })]);
