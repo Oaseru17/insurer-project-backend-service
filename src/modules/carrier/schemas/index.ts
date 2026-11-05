@@ -1,4 +1,5 @@
 export * from './carrier-summary.schema';
+export * from './carrier-section.schema';
 export * from './field-resolution.schema';
 export * from './eligibility-request.schema';
 export * from './eligibility-result.schema';

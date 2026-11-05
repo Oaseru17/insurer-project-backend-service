@@ -17,6 +17,7 @@ interface Operation {
   summary: string;
   tag: string;
   body?: string;
+  query?: string[];
   ok: { status: number; schema: string; array?: boolean };
   errors: number[];
 }
@@ -72,11 +73,12 @@ const OPERATIONS: Operation[] = [
     errors: [400, 404, 422, 500],
   },
   {
-    method: 'post',
+    method: 'get',
     path: '/api/forms/{carrierId}/prefill',
-    summary: 'Resolve each carrier field from the profile: pre-filled, converted, suggested or ask',
+    summary:
+      "Each of the carrier's fields resolved from the profile — pre-filled or asked — plus its pages",
     tag: 'Forms',
-    body: 'PrefillRequest',
+    query: ['customerId'],
     ok: { status: 200, schema: 'PrefillResponse' },
     errors: [400, 404, 500],
   },
@@ -84,13 +86,20 @@ const OPERATIONS: Operation[] = [
 
 const ref = (id: string) => ({ $ref: `#/components/schemas/${id}` });
 
-function pathParameters(path: string) {
-  return [...path.matchAll(/\{(\w+)\}/g)].map(([, name]) => ({
+function parameters(path: string, query: string[] = []) {
+  const inPath = [...path.matchAll(/\{(\w+)\}/g)].map(([, name]) => ({
     name,
     in: 'path',
     required: true,
     schema: { type: 'string' },
   }));
+  const inQuery = query.map((name) => ({
+    name,
+    in: 'query',
+    required: true,
+    schema: { type: 'string' },
+  }));
+  return [...inPath, ...inQuery];
 }
 
 function toOperation(op: Operation) {
@@ -99,7 +108,7 @@ function toOperation(op: Operation) {
     summary: op.summary,
     tags: [op.tag],
     operationId: `${op.method}${op.path.replace(/[{}]/g, '').replace(/\/(\w)/g, (_, c: string) => c.toUpperCase())}`,
-    parameters: pathParameters(op.path),
+    parameters: parameters(op.path, op.query),
     ...(op.body && {
       requestBody: { required: true, content: { 'application/json': { schema: ref(op.body) } } },
     }),
