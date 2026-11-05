@@ -34,7 +34,7 @@ const OPERATIONS: Operation[] = [
     path: '/api/customers/{id}',
     summary: 'Get a customer profile',
     tag: 'Customers',
-    ok: { status: 200, schema: 'Customer' },
+    ok: { status: 200, schema: 'CustomerResponse' },
     errors: [404, 500],
   },
   {
@@ -121,6 +121,14 @@ function toOperation(op: Operation) {
 function buildOpenApiDocument() {
   const { schemas } = z.toJSONSchema(z.globalRegistry, {
     uri: (id) => `#/components/schemas/${id}`,
+    unrepresentable: 'any',
+    // A Date leaves the API through res.json() as an ISO timestamp string.
+    override: ({ zodSchema, jsonSchema }) => {
+      if (zodSchema._zod.def.type === 'date') {
+        jsonSchema.type = 'string';
+        jsonSchema.format = 'date-time';
+      }
+    },
   });
   const componentSchemas = Object.fromEntries(
     Object.entries(schemas).map(([id, schema]) => {
