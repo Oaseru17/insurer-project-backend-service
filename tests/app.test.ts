@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import request from 'supertest';
-import { createApp } from './app';
+import { createApp } from '../src/app';
 
 describe('createApp', () => {
   const app = createApp();
