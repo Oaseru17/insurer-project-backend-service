@@ -13,7 +13,6 @@ import type { CarrierSection, CarrierSummary, EligibilityResult, FieldResolution
 
 interface CarrierService {
   listCarriers(): CarrierSummary[];
-  getCarrier(id: string): CarrierProvider;
   getForm(id: string): FormDefinition;
   checkEligibility(
     carrierId: string,
@@ -41,7 +40,6 @@ function createCarrierService(
   return {
     listCarriers: () =>
       repository.list().map(({ id, name, form }) => ({ id, name, product: form.product })),
-    getCarrier,
     getForm: (id) => getCarrier(id).form,
     resolveFields: (carrierId, customer) => {
       const { adapter } = getCarrier(carrierId);
