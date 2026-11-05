@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Maya accepts the suggestions, answers the rest, skips sprinklers",
+    "answers": {
+      "applicant_full_name": "Maya Torres",
+      "date_of_birth": "03/12/1994",
+      "contact_email": "maya@example.com",
+      "phone": "503-555-0142",
+      "residence_state": "Oregon",
+      "postal_code": "97205",
+      "contents_coverage": 50000,
+      "pets": ["Dog"],
+      "dog_breed": "Labrador",
+      "claims_last_5_years": 0
+    },
+    "expectedRequest": {
+      "applicant_full_name": "Maya Torres",
+      "date_of_birth": "03/12/1994",
+      "contact_email": "maya@example.com",
+      "phone": "503-555-0142",
+      "residence_state": "Oregon",
+      "postal_code": "97205",
+      "contents_coverage": 50000,
+      "pets": ["Dog"],
+      "dog_breed": "Labrador",
+      "claims_last_5_years": 0
+    }
+  },
+  {
+    "name": "Maya changes pets to Cat: dog_breed is hidden, so it is dropped",
+    "answers": {
+      "applicant_full_name": "Maya Torres",
+      "date_of_birth": "03/12/1994",
+      "contact_email": "maya@example.com",
+      "phone": "503-555-0142",
+      "residence_state": "Oregon",
+      "postal_code": "97205",
+      "contents_coverage": 50000,
+      "pets": ["Cat"],
+      "dog_breed": "Labrador",
+      "claims_last_5_years": 0,
+      "building_has_sprinklers": true
+    },
+    "expectedRequest": {
+      "applicant_full_name": "Maya Torres",
+      "date_of_birth": "03/12/1994",
+      "contact_email": "maya@example.com",
+      "phone": "503-555-0142",
+      "residence_state": "Oregon",
+      "postal_code": "97205",
+      "contents_coverage": 50000,
+      "pets": ["Cat"],
+      "claims_last_5_years": 0,
+      "building_has_sprinklers": true
+    }
+  }
+]

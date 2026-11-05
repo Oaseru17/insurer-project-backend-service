@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Maya is eligible",
+    "customerId": "a",
+    "asOf": "2026-11-05",
+    "expected": { "status": "eligible" }
+  },
+  {
+    "name": "Sam is ineligible for two reasons today",
+    "customerId": "b",
+    "asOf": "2026-11-05",
+    "expected": {
+      "status": "ineligible",
+      "reasons": [
+        { "code": "min_age", "field": "date_of_birth" },
+        { "code": "state_not_served", "field": "residence_state" }
+      ]
+    }
+  },
+  {
+    "name": "Sam turns 21 on 2027-01-20, so only Nevada remains",
+    "customerId": "b",
+    "asOf": "2027-02-01",
+    "expected": {
+      "status": "ineligible",
+      "reasons": [{ "code": "state_not_served", "field": "residence_state" }]
+    }
+  }
+]
