@@ -7,7 +7,9 @@ import { createCustomerModule, seedCustomers } from '../../../src/modules/custom
 const customers = createCustomerModule();
 seedCustomers(customers.service);
 const maya = customers.service.getCustomer('a');
-const harbor = createCarrierModule().service.getCarrier('harbor').adapter;
+const harbor = createCarrierModule({ customers: customers.service }).service.getCarrier(
+  'harbor',
+).adapter;
 
 describe('HarborAdapter', () => {
   it("resolves each of Harbor's fields from Maya's profile as the brief expects", () => {

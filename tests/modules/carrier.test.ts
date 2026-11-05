@@ -3,13 +3,16 @@ import express from 'express';
 import request from 'supertest';
 import harborForm from '../../golden/harbor-form.json';
 import { createCarrierModule, createInMemoryCarrierRepository } from '../../src/modules/carrier';
+import { createCustomerModule } from '../../src/modules/customer';
 import { FormDefinitionError } from '../../src/shared/form-schema';
 import { errorHandler } from '../../src/shared/http';
 import { createLogger } from '../../src/shared/logger';
 
+const customers = createCustomerModule();
+
 function carrierApp() {
   const app = express();
-  app.use('/api/carriers', createCarrierModule().router);
+  app.use('/api/carriers', createCarrierModule({ customers: customers.service }).router);
   app.use(errorHandler(createLogger(() => undefined)));
   return app;
 }
@@ -50,6 +53,7 @@ describe('CarrierModule', () => {
           createAdapter: () => {
             throw new Error('not reached: the form is rejected first');
           },
+          createRules: () => [],
         },
       ]),
     ).toThrow(FormDefinitionError);
