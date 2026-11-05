@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { IsoDateSchema } from '../../shared/schemas';
+import { IsoDateSchema } from '../../../shared/schemas';
 
 const CustomerSchema = z
   .object({
