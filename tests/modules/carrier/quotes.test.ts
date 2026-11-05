@@ -30,11 +30,8 @@ describe('Harbor quotes', () => {
       const res = await createQuote({ customerId: 'a', asOf: AS_OF, answers });
 
       expect(res.status).toBe(201);
-      expect(res.body).toMatchObject({
-        carrierId: 'harbor',
-        request: expectedRequest,
-        sent: false,
-      });
+      expect(res.body).toMatchObject({ carrierId: 'harbor', sent: false });
+      expect(res.body.request).toEqual(expectedRequest);
     },
   );
 

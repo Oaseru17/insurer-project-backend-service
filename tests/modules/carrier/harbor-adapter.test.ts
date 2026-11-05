@@ -1,15 +1,15 @@
 import { describe, expect, it } from '@jest/globals';
 import prefill from '../../../golden/maya.prefill.json';
 import quoteCases from '../../../golden/maya.quote-requests.json';
-import { createCarrierModule } from '../../../src/modules/carrier';
+import { createInMemoryCarrierRepository } from '../../../src/modules/carrier';
 import { createCustomerModule, seedCustomers } from '../../../src/modules/customer';
 
 const customers = createCustomerModule();
 seedCustomers(customers.service);
 const maya = customers.service.getCustomer('a');
-const harbor = createCarrierModule({ customers: customers.service }).service.getCarrier(
-  'harbor',
-).adapter;
+const provider = createInMemoryCarrierRepository().findById('harbor');
+if (!provider) throw new Error('Harbor provider is not registered');
+const harbor = provider.adapter;
 
 describe('HarborAdapter', () => {
   it("resolves each of Harbor's fields from Maya's profile as the brief expects", () => {
