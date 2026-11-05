@@ -6,7 +6,9 @@ const ErrorResponseSchema = z
     error: z.object({
       code: z.enum(['invalid_request', 'not_found', 'ineligible', 'internal_error']),
       message: z.string(),
-      issues: z.array(z.object({ path: z.string(), message: z.string() })).optional(),
+      issues: z
+        .array(z.object({ path: z.string(), message: z.string(), code: z.string().optional() }))
+        .optional(),
       reasons: z.array(ReasonSchema).optional(),
     }),
   })
