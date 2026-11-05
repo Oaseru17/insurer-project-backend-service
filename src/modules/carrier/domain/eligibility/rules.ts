@@ -1,5 +1,5 @@
 import { ageOn } from '../../../../shared/dates';
-import type { EligibilityFacts, EligibilityRule } from './eligibility.types';
+import { type EligibilityFacts, type EligibilityRule, RuleStatus } from './eligibility.types';
 
 interface MinAgeRule {
   field: string;
@@ -19,12 +19,12 @@ interface AllowedValueRule {
 function minAge({ field, minAge: min, carrierName, birthDate }: MinAgeRule): EligibilityRule {
   return (facts) => {
     const birth = birthDate(facts);
-    if (!birth) return { status: 'unknown', fields: [field] };
+    if (!birth) return { status: RuleStatus.Unknown, fields: [field] };
     const age = ageOn(birth, facts.asOf);
     return age >= min
-      ? { status: 'pass' }
+      ? { status: RuleStatus.Pass }
       : {
-          status: 'fail',
+          status: RuleStatus.Fail,
           reason: {
             code: 'min_age',
             field,
@@ -37,10 +37,10 @@ function minAge({ field, minAge: min, carrierName, birthDate }: MinAgeRule): Eli
 function allowedValue({ field, code, allowed, value, message }: AllowedValueRule): EligibilityRule {
   return (facts) => {
     const actual = value(facts);
-    if (!actual) return { status: 'unknown', fields: [field] };
+    if (!actual) return { status: RuleStatus.Unknown, fields: [field] };
     return allowed.includes(actual)
-      ? { status: 'pass' }
-      : { status: 'fail', reason: { code, field, message: message(actual) } };
+      ? { status: RuleStatus.Pass }
+      : { status: RuleStatus.Fail, reason: { code, field, message: message(actual) } };
   };
 }
 

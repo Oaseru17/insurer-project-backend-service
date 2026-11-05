@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validateBody } from '../../shared/http';
 import type { CarrierController } from './carrier.controller';
-import { EligibilityRequestSchema } from './schemas';
+import { EligibilityRequestSchema, QuoteCreateRequestSchema } from './schemas';
 
 function createCarrierRouter(controller: CarrierController): Router {
   const router = Router();
@@ -12,6 +12,7 @@ function createCarrierRouter(controller: CarrierController): Router {
     validateBody(EligibilityRequestSchema),
     controller.checkEligibility,
   );
+  router.post('/:id/quotes', validateBody(QuoteCreateRequestSchema), controller.createQuote);
   return router;
 }
 
