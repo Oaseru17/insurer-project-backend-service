@@ -15,13 +15,13 @@ function quoteApp() {
   seedCustomers(customers.service);
   const app = express();
   app.use(express.json());
-  app.use('/api/carriers', createCarrierModule({ customers: customers.service }).router);
+  app.use('/api/v1/carriers', createCarrierModule({ customers: customers.service }).router);
   app.use(errorHandler(createLogger(() => undefined)));
   return app;
 }
 
 const createQuote = (body: object) =>
-  request(quoteApp()).post('/api/carriers/harbor/quotes').send(body);
+  request(quoteApp()).post('/api/v1/carriers/harbor/quotes').send(body);
 
 describe('Harbor quotes', () => {
   it.each(quoteCases)(

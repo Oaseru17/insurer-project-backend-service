@@ -9,6 +9,8 @@ import './modules/form';
 // Component schemas come straight from the zod schemas,
 // so the contract olli-web generates its types from is the one requests are validated with.
 
+const API_V1 = '/api/v1';
+
 type Method = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
 interface Operation {
@@ -32,7 +34,7 @@ const ERROR_DESCRIPTIONS: Record<number, string> = {
 const OPERATIONS: Operation[] = [
   {
     method: 'get',
-    path: '/api/customers/{id}',
+    path: `${API_V1}/customers/{id}`,
     summary: 'Get a customer profile',
     tag: 'Customers',
     ok: { status: 200, schema: 'CustomerResponse' },
@@ -40,7 +42,7 @@ const OPERATIONS: Operation[] = [
   },
   {
     method: 'get',
-    path: '/api/carriers',
+    path: `${API_V1}/carriers`,
     summary: 'List carriers and the product each quotes',
     tag: 'Carriers',
     ok: { status: 200, schema: 'CarrierSummary', array: true },
@@ -48,7 +50,7 @@ const OPERATIONS: Operation[] = [
   },
   {
     method: 'get',
-    path: '/api/carriers/{id}/form',
+    path: `${API_V1}/carriers/{id}/form`,
     summary: "Get a carrier's quote form definition",
     tag: 'Carriers',
     ok: { status: 200, schema: 'FormDefinition' },
@@ -56,7 +58,7 @@ const OPERATIONS: Operation[] = [
   },
   {
     method: 'post',
-    path: '/api/carriers/{id}/eligibility',
+    path: `${API_V1}/carriers/{id}/eligibility`,
     summary: 'Check whether the carrier can quote this customer',
     tag: 'Carriers',
     body: 'EligibilityRequest',
@@ -65,7 +67,7 @@ const OPERATIONS: Operation[] = [
   },
   {
     method: 'post',
-    path: '/api/carriers/{id}/quotes',
+    path: `${API_V1}/carriers/{id}/quotes`,
     summary: "Validate answers, re-check eligibility and build the carrier's quote request",
     tag: 'Carriers',
     body: 'QuoteCreateRequest',
@@ -74,7 +76,7 @@ const OPERATIONS: Operation[] = [
   },
   {
     method: 'get',
-    path: '/api/forms/{carrierId}/prefill',
+    path: `${API_V1}/forms/{carrierId}/prefill`,
     summary:
       "Each of the carrier's fields resolved from the profile — pre-filled or asked — plus its pages",
     tag: 'Forms',
@@ -169,4 +171,4 @@ function buildOpenApiDocument() {
   };
 }
 
-export { buildOpenApiDocument };
+export { API_V1, buildOpenApiDocument };

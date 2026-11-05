@@ -12,28 +12,28 @@ const customers = createCustomerModule();
 
 function carrierApp() {
   const app = express();
-  app.use('/api/carriers', createCarrierModule({ customers: customers.service }).router);
+  app.use('/api/v1/carriers', createCarrierModule({ customers: customers.service }).router);
   app.use(errorHandler(createLogger(() => undefined)));
   return app;
 }
 
 describe('CarrierModule', () => {
   it('lists Harbor and the product it quotes', async () => {
-    const res = await request(carrierApp()).get('/api/carriers');
+    const res = await request(carrierApp()).get('/api/v1/carriers');
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([{ id: 'harbor', name: 'Harbor Assurance', product: 'renters' }]);
   });
 
   it("serves Harbor's form definition as Harbor supplied it", async () => {
-    const res = await request(carrierApp()).get('/api/carriers/harbor/form');
+    const res = await request(carrierApp()).get('/api/v1/carriers/harbor/form');
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual(harborForm);
   });
 
   it('returns 404 for an unknown carrier', async () => {
-    const res = await request(carrierApp()).get('/api/carriers/zz/form');
+    const res = await request(carrierApp()).get('/api/v1/carriers/zz/form');
 
     expect(res.status).toBe(404);
   });
