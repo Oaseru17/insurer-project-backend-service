@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 const config = {
   testEnvironment: 'node',
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/tests'],
   transform: { '^.+\\.ts$': ['@swc/jest'] },
   clearMocks: true,
 };
