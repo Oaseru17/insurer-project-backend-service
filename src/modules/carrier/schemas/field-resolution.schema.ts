@@ -1,11 +1,19 @@
 import { z } from 'zod';
 import { FieldValueSchema } from '../../../shared/schemas';
 
+const ResolutionSource = {
+  Profile: 'profile',
+  Converted: 'converted',
+  Suggested: 'suggested',
+  Ask: 'ask',
+} as const;
+type ResolutionSource = (typeof ResolutionSource)[keyof typeof ResolutionSource];
+
 const FieldResolutionSchema = z
   .object({
     key: z.string(),
     source: z
-      .enum(['profile', 'converted', 'suggested', 'ask'])
+      .enum(ResolutionSource)
       .describe(
         'profile: copied as-is · converted: derived from the profile · suggested: a default the customer confirms · ask: the profile cannot answer it',
       ),
@@ -17,4 +25,4 @@ const FieldResolutionSchema = z
 
 type FieldResolution = z.infer<typeof FieldResolutionSchema>;
 
-export { type FieldResolution, FieldResolutionSchema };
+export { type FieldResolution, FieldResolutionSchema, ResolutionSource };

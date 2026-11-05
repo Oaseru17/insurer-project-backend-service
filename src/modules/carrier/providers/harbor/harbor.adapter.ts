@@ -3,7 +3,7 @@ import type { FieldDef, FormDefinition } from '../../../../shared/form-schema';
 import { visibleAnswers } from '../../../../shared/form-rules';
 import type { Answers } from '../../../../shared/schemas';
 import type { CarrierAdapter } from '../../carrier.types';
-import type { FieldResolution } from '../../schemas';
+import { type FieldResolution, ResolutionSource } from '../../schemas';
 import { concat, matchOption, reformatDate, stateName } from '../../transforms';
 import { harborSections } from './harbor.sections';
 
@@ -11,7 +11,9 @@ type Resolution = Omit<FieldResolution, 'key'>;
 type Resolver = (customer: CustomerDocument, field: FieldDef) => Resolution;
 
 const ask = (reason: string, hint?: string): Resolution =>
-  hint === undefined ? { source: 'ask', reason } : { source: 'ask', reason, hint };
+  hint === undefined
+    ? { source: ResolutionSource.Ask, reason }
+    : { source: ResolutionSource.Ask, reason, hint };
 
 const usd = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -31,7 +33,7 @@ const harborMapping: Record<string, Resolver> = {
     const name = concat([customer.first_name, customer.last_name]);
     return name
       ? {
-          source: 'converted',
+          source: ResolutionSource.Converted,
           value: name,
           reason: 'first_name + last_name; editable, as a legal name may differ',
         }
@@ -40,13 +42,13 @@ const harborMapping: Record<string, Resolver> = {
   date_of_birth: (customer, field) =>
     field.type === 'date'
       ? {
-          source: 'converted',
+          source: ResolutionSource.Converted,
           value: reformatDate(customer.date_of_birth, field.format),
           reason: `date_of_birth in Harbor's ${field.format} format`,
         }
       : ask('Unexpected field type'),
   contact_email: (customer) => ({
-    source: 'profile',
+    source: ResolutionSource.Profile,
     value: customer.email,
     reason: 'email, copied',
   }),
@@ -54,10 +56,18 @@ const harborMapping: Record<string, Resolver> = {
   residence_state: (customer) => {
     const name = stateName(customer.state);
     return name
-      ? { source: 'converted', value: name, reason: `state code ${customer.state} → ${name}` }
+      ? {
+          source: ResolutionSource.Converted,
+          value: name,
+          reason: `state code ${customer.state} → ${name}`,
+        }
       : ask(`Unknown state code ${customer.state}`);
   },
-  postal_code: (customer) => ({ source: 'profile', value: customer.zip, reason: 'zip, copied' }),
+  postal_code: (customer) => ({
+    source: ResolutionSource.Profile,
+    value: customer.zip,
+    reason: 'zip, copied',
+  }),
   contents_coverage: (customer) =>
     ask(
       "Property value isn't coverage: the customer picks one of Harbor's amounts",
@@ -66,7 +76,7 @@ const harborMapping: Record<string, Resolver> = {
   pets: (customer) =>
     customer.has_dog
       ? {
-          source: 'suggested',
+          source: ResolutionSource.Suggested,
           value: ['Dog'],
           reason: 'has_dog shows a dog, not that it is the only pet',
         }
@@ -76,9 +86,13 @@ const harborMapping: Record<string, Resolver> = {
     const match = matchOption(customer.dog_breed, textOptions(field), 'Other');
     if (!match) return ask(`"${customer.dog_breed}" isn't one of Harbor's breeds`);
     return match.exact && match.option === customer.dog_breed
-      ? { source: 'profile', value: match.option, reason: "dog_breed matches Harbor's option" }
+      ? {
+          source: ResolutionSource.Profile,
+          value: match.option,
+          reason: "dog_breed matches Harbor's option",
+        }
       : {
-          source: 'converted',
+          source: ResolutionSource.Converted,
           value: match.option,
           reason: `"${customer.dog_breed}" → ${match.option}`,
         };
