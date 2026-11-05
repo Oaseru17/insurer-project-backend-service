@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { FieldResolutionSchema } from '../../carrier';
+import { CarrierSectionSchema, FieldResolutionSchema } from '../../carrier';
 
 const PrefillResponseSchema = z
   .object({
     carrierId: z.string(),
     customerId: z.string(),
     resolutions: z.array(FieldResolutionSchema),
-    notes: z.array(z.string()).describe('Data-quality notes about the profile'),
+    sections: z.array(CarrierSectionSchema),
   })
   .meta({ id: 'PrefillResponse' });
 

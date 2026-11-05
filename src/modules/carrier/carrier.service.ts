@@ -1,4 +1,4 @@
-import type { CustomerService } from '../customer';
+import type { CustomerDocument, CustomerService } from '../customer';
 import type { FormDefinition } from '../../shared/form-schema';
 import { randomUUID } from 'node:crypto';
 import { IneligibleError, NotFoundError, ValidationError } from '../../shared/http';
@@ -9,7 +9,7 @@ import { runRules } from './domain/eligibility';
 import { buildQuote, QuoteStatus } from './domain/quote';
 import type { QuoteDocument } from './quote.model';
 import type { QuoteRepository } from './quote.repository';
-import type { CarrierSummary, EligibilityResult } from './schemas';
+import type { CarrierSection, CarrierSummary, EligibilityResult, FieldResolution } from './schemas';
 
 interface CarrierService {
   listCarriers(): CarrierSummary[];
@@ -22,6 +22,10 @@ interface CarrierService {
     answers?: Answers,
   ): EligibilityResult;
   createQuote(carrierId: string, customerId: string, asOf: Date, answers: Answers): QuoteDocument;
+  resolveFields(
+    carrierId: string,
+    customer: CustomerDocument,
+  ): { resolutions: FieldResolution[]; sections: readonly CarrierSection[] };
 }
 
 function createCarrierService(
@@ -39,6 +43,10 @@ function createCarrierService(
       repository.list().map(({ id, name, form }) => ({ id, name, product: form.product })),
     getCarrier,
     getForm: (id) => getCarrier(id).form,
+    resolveFields: (carrierId, customer) => {
+      const { adapter } = getCarrier(carrierId);
+      return { resolutions: adapter.resolve(customer), sections: adapter.sections };
+    },
     checkEligibility: (carrierId, customerId, asOf, answers = {}) =>
       runRules(getCarrier(carrierId).rules, {
         customer: customers.getCustomer(customerId),

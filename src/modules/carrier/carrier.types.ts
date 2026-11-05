@@ -2,13 +2,7 @@ import type { CustomerDocument } from '../customer';
 import type { FormDefinition } from '../../shared/form-schema';
 import type { Answers } from '../../shared/schemas';
 import type { EligibilityRule } from './domain/eligibility';
-import type { FieldResolution } from './schemas';
-
-interface CarrierSection {
-  id: string;
-  title: string;
-  fields: string[];
-}
+import type { CarrierSection, FieldResolution } from './schemas';
 
 // The brief's "adapter": turns our customer into the carrier's fields and request format.
 interface CarrierAdapter {
