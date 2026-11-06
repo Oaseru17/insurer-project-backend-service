@@ -1,5 +1,5 @@
 {
-  "name": "olli-backend-service",
+  "name": "insurer-project-backend-service",
   "version": "0.1.0",
   "private": true,
   "description": "Maps a standard customer profile to a carrier's JSON quote form: eligibility, pre-fill and quote requests.",

@@ -7,7 +7,7 @@ import './modules/carrier';
 import './modules/form';
 
 // Component schemas come straight from the zod schemas,
-// so the contract olli-web generates its types from is the one requests are validated with.
+// so the contract insurer-project-web generates its types from is the one requests are validated with.
 
 const API_V1 = '/api/v1';
 
@@ -157,7 +157,7 @@ function buildOpenApiDocument() {
   return {
     openapi: '3.1.0',
     info: {
-      title: 'Olli backend service',
+      title: 'Insurer project backend service',
       version: '0.1.0',
       license: { name: 'MIT', identifier: 'MIT' },
       description:

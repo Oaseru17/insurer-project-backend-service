@@ -1,4 +1,4 @@
-# Olli backend service
+# Insurer project backend service
 
 Our platform holds one **standard customer profile**. Every insurance carrier sends its quote form as
 **JSON** with its own field names, formats, options and rules. This service connects the two; the first
@@ -12,10 +12,10 @@ carrier is a fictional one, **Harbor Assurance** (renters insurance). It provide
 
 Two repositories:
 
-| Repo                                                 | What it is                                                       |
-| ---------------------------------------------------- | ---------------------------------------------------------------- |
-| **olli-backend-service** (this repo)                 | Express + TypeScript API — owns all the business logic           |
-| [**olli-web**](https://github.com/Oaseru17/olli-web) | Next.js client — renders what the API returns, no business logic |
+| Repo                                                                       | What it is                                                       |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **insurer-project-backend-service** (this repo)                            | Express + TypeScript API — owns all the business logic           |
+| [**insurer-project-web**](https://github.com/Oaseru17/insurer-project-web) | Next.js client — renders what the API returns, no business logic |
 
 ---
 
@@ -25,11 +25,11 @@ Requires **Node 22+** (`.nvmrc` pins 24).
 
 ```bash
 # terminal 1 — API on http://localhost:4000
-git clone https://github.com/Oaseru17/olli-backend-service && cd olli-backend-service
+git clone https://github.com/Oaseru17/insurer-project-backend-service && cd insurer-project-backend-service
 npm install && npm run dev
 
 # terminal 2 — web on http://localhost:3000
-git clone https://github.com/Oaseru17/olli-web && cd olli-web
+git clone https://github.com/Oaseru17/insurer-project-web && cd insurer-project-web
 npm install && npm run dev
 ```
 
@@ -114,12 +114,12 @@ with her answers:
 
 ```mermaid
 flowchart LR
-  subgraph WEB["olli-web · Next.js"]
+  subgraph WEB["insurer-project-web · Next.js"]
     UI["Quote journey<br/>renders the form JSON"]
     CLIENT["Typed API client<br/>generated from OpenAPI"]
   end
 
-  subgraph API["olli-backend-service — Express API v1"]
+  subgraph API["insurer-project-backend-service — Express API v1"]
     direction TB
     subgraph CUSTOMER["CustomerModule"]
       CUST_HTTP["routes → controller → service"]
